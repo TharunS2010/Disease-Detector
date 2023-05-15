@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ChatGPT Integration</title>
+  <style>
+    #chatbox {
+      width: 400px;
+      height: 500px;
+      border: 1px solid #ccc;
+      overflow-y: scroll;
+      padding: 10px;
+    }
+
+    #input {
+      width: 100%;
+      padding: 5px;
+    }
+
+    #submit {
+      margin-top: 10px;
+      padding: 5px 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>ChatGPT Integration</h1>
+  <div id="chatbox"></div>
+  <input type="text" id="input" placeholder="Type your message" />
+  <button id="submit">Send</button>
+
+  <script src="https://cdn.jsdelivr.net/npm/@openai/chatgpt@0.6.0/dist/index.min.js"></script>
+  <script>
+    const chatbox = document.getElementById('chatbox');
+    const input = document.getElementById('input');
+    const submitBtn = document.getElementById('submit');
+
+    // Create a new ChatGPT instance
+    const chatGPT = new OpenAI.ChatCompletion('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');
+
+    // Function to add a message to the chatbox
+    function addMessage(message, sender) {
+      const messageElement = document.createElement('div');
+      messageElement.classList.add('message');
+      messageElement.classList.add(sender);
+      messageElement.textContent = message;
+      chatbox.appendChild(messageElement);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+
+    // Handle user input
+    function handleInput() {
+      const userInput = input.value.trim();
+      if (userInput === '') {
+        return;
+      }
+
+      // Add user's message to the chatbox
+      addMessage(userInput, 'user');
+
+      // Clear the input field
+      input.value = '';
+
+      // Generate a response using ChatGPT
+      chatGPT.send(userInput).then(response => {
+        // Add the response to the chatbox
+        const reply = response.choices[0].message.content;
+        addMessage(reply, 'chatGPT');
+      });
+    }
+
+    // Event listener for submit button click
+    submitBtn.addEventListener('click', handleInput);
+
+    // Event listener for enter key press
+    input.addEventListener('keydown', event => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        handleInput();
+      }
+    });
+  </script>
+</body>
+</html>
